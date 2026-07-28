@@ -27,35 +27,7 @@ export default function GameBoard({ level, playerState }) {
     return 0; // Came from bottom, facing up
   };
 
-  const getPathBorders = (x, y) => {
-    let shadows = [];
-    const bColor = '#3c7a10';
-    const bSize = 10;
-    
-    const hasTop = isPath(x, y - 1);
-    const hasBottom = isPath(x, y + 1);
-    const hasLeft = isPath(x - 1, y);
-    const hasRight = isPath(x + 1, y);
-
-    if (!hasTop) shadows.push(`0 -${bSize}px 0 0 ${bColor}`);
-    if (!hasBottom) shadows.push(`0 ${bSize}px 0 0 ${bColor}`);
-    if (!hasLeft) shadows.push(`-${bSize}px 0 0 0 ${bColor}`);
-    if (!hasRight) shadows.push(`${bSize}px 0 0 0 ${bColor}`);
-
-    if (!hasTop && !hasLeft) shadows.push(`-${bSize}px -${bSize}px 0 0 ${bColor}`);
-    if (!hasTop && !hasRight) shadows.push(`${bSize}px -${bSize}px 0 0 ${bColor}`);
-    if (!hasBottom && !hasLeft) shadows.push(`-${bSize}px ${bSize}px 0 0 ${bColor}`);
-    if (!hasBottom && !hasRight) shadows.push(`${bSize}px ${bSize}px 0 0 ${bColor}`);
-
-    // Inner shadow for texture depth
-    shadows.push(`inset 0 0 20px rgba(0,0,0,0.15)`);
-
-    return {
-      boxShadow: shadows.join(', '),
-      border: 'none',
-      zIndex: 1
-    };
-  };
+  // getPathBorders removed as we now use drop-shadow on the path container
 
   const renderCells = () => {
     const cells = [];
@@ -79,7 +51,7 @@ export default function GameBoard({ level, playerState }) {
               top: y * tileSize,
               width: tileSize + 1,
               height: tileSize + 1,
-              ...getPathBorders(x, y)
+              boxShadow: 'inset 0 0 20px rgba(0,0,0,0.3)'
             }}
           >
             {hasStar(x, y) && (
@@ -127,8 +99,14 @@ export default function GameBoard({ level, playerState }) {
             height: level.height * tileSize,
           }}
         >
-          {/* Render the grid cells */}
-          {renderCells()}
+          {/* Render the grid cells inside a wrapper with drop-shadow for the path outline */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            filter: 'drop-shadow(10px 0 0 #3c7a10) drop-shadow(-10px 0 0 #3c7a10) drop-shadow(0 10px 0 #3c7a10) drop-shadow(0 -10px 0 #3c7a10)'
+          }}>
+            {renderCells()}
+          </div>
 
           {/* Render the Player */}
           <Player position={position} rotation={playerRotation} tileSize={tileSize} />
