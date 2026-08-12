@@ -37,11 +37,17 @@ function App() {
     const newY = playerPosition.y + dy;
 
     if (isPath(newX, newY)) {
+      const moveAudio = new Audio('/moving-sound.wav');
+      moveAudio.play().catch(err => console.log('Audio play error:', err));
+
       setPlayerPosition({ x: newX, y: newY });
       
       // Check star collection
       const starIndex = level.stars.findIndex(s => s.x === newX && s.y === newY);
       if (starIndex !== -1) {
+        const audio = new Audio('/collecting-star.mp3');
+        audio.play().catch(err => console.log('Audio play error:', err));
+
         const newId = Date.now();
         setFlyingStars(prev => [...prev, { id: newId }]);
         
@@ -57,7 +63,11 @@ function App() {
 
       // Check win condition
       if (newX === level.finish.x && newY === level.finish.y) {
-        setTimeout(() => setHasWon(true), 400); // Wait for animation to finish
+        setTimeout(() => {
+          const winAudio = new Audio('/winning sound.mp3');
+          winAudio.play().catch(err => console.log('Audio play error:', err));
+          setHasWon(true);
+        }, 400); // Wait for animation to finish
       }
     }
   };
@@ -81,6 +91,9 @@ function App() {
   };
 
   const restartGame = () => {
+    const clickAudio = new Audio('/button click.mp3');
+    clickAudio.play().catch(err => console.log('Audio play error:', err));
+
     const newLevel = generateRandomLevel();
     setLevel(newLevel);
     setPlayerPosition({ x: newLevel.start.x, y: newLevel.start.y });
