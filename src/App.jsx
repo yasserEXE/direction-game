@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import GameBoard from './components/GameBoard';
 import Controls from './components/Controls';
 import { generateRandomLevel } from './mapGenerator';
-import { Star } from 'lucide-react';
+import { Star, RotateCcw } from 'lucide-react';
 
 const initialLevel = generateRandomLevel();
 
@@ -134,8 +134,8 @@ function App() {
 
       {/* Top Bar UI */}
       <div className="top-bar">
-        <button className="exit-button" onClick={restartGame}>
-          X
+        <button className="exit-button" onClick={restartGame} title="Retry" aria-label="Retry">
+          <RotateCcw size={32} strokeWidth={3.5} />
         </button>
         <div className="progress-bar">
           {Array.from({ length: totalStars }).map((_, i) => (

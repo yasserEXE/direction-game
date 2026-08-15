@@ -22,7 +22,7 @@ export default function Player({ position, rotation, tileSize }) {
       transition={{ duration: 0.4, ease: "easeInOut" }}
     >
       <motion.img 
-        src="/charchter-directions final final.svg"
+        src="/cat-character.png"
         alt="Player Character"
         style={{ width: '105%', height: '105%', zIndex: 5, filter: 'drop-shadow(0 6px 0 rgba(0,0,0,0.2))' }}
         animate={{ rotate: rotation }}
