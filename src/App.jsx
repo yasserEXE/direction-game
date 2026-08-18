@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import GameBoard from './components/GameBoard';
 import Controls from './components/Controls';
 import { generateRandomLevel } from './mapGenerator';
-import { Star, RotateCcw } from 'lucide-react';
+import { Star, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 
 const initialLevel = generateRandomLevel();
 
@@ -18,6 +18,67 @@ function App() {
   const [hasWon, setHasWon] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [flyingStars, setFlyingStars] = useState([]);
+  const [isMuted, setIsMuted] = useState(() => {
+    return localStorage.getItem('direction_game_music_muted') === 'true';
+  });
+
+  const audioRef = useRef(null);
+  const isMutedRef = useRef(isMuted);
+
+  useEffect(() => {
+    isMutedRef.current = isMuted;
+  }, [isMuted]);
+
+  useEffect(() => {
+    const audio = new Audio(`${import.meta.env.BASE_URL}bgmusic_Ascending.mp3`);
+    audio.loop = true;
+    audio.volume = 0.35;
+    audioRef.current = audio;
+
+    const playAudio = () => {
+      if (!isMutedRef.current && audio.paused) {
+        audio.play().catch(() => {
+          // Autoplay policy prevented playback until user interaction
+        });
+      }
+    };
+
+    playAudio();
+
+    const handleFirstInteraction = () => {
+      if (!isMutedRef.current && audio.paused) {
+        audio.play().catch(() => {});
+      }
+    };
+
+    window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
+    window.addEventListener('touchstart', handleFirstInteraction, { once: true });
+    window.addEventListener('click', handleFirstInteraction, { once: true });
+    window.addEventListener('keydown', handleFirstInteraction, { once: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+      audio.pause();
+    };
+  }, []);
+
+  const toggleMusic = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isMuted) {
+      audio.play().catch(() => {});
+      setIsMuted(false);
+      localStorage.setItem('direction_game_music_muted', 'false');
+    } else {
+      audio.pause();
+      setIsMuted(true);
+      localStorage.setItem('direction_game_music_muted', 'true');
+    }
+  };
 
   // Total stars in the level is fixed at 3
   const totalStars = 3;
@@ -134,9 +195,19 @@ function App() {
 
       {/* Top Bar UI */}
       <div className="top-bar">
-        <button className="exit-button" onClick={restartGame} title="Retry" aria-label="Retry">
-          <RotateCcw size={32} strokeWidth={3.5} />
-        </button>
+        <div className="top-bar-actions">
+          <button className="exit-button" onClick={restartGame} title="Retry" aria-label="Retry">
+            <RotateCcw size={32} strokeWidth={3.5} />
+          </button>
+          <button 
+            className={`music-toggle-btn ${isMuted ? 'muted' : ''}`} 
+            onClick={toggleMusic} 
+            title={isMuted ? "تشغيل الموسيقى (Play Music)" : "كتم الموسيقى (Mute Music)"}
+            aria-label={isMuted ? "Play Music" : "Mute Music"}
+          >
+            {isMuted ? <VolumeX size={32} strokeWidth={3} /> : <Volume2 size={32} strokeWidth={3} />}
+          </button>
+        </div>
         <div className="progress-bar">
           {Array.from({ length: totalStars }).map((_, i) => (
             <Star key={i} className={`progress-star ${i < starsCollected ? 'collected' : ''}`} />

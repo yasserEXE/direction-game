@@ -319,6 +319,12 @@ body {
   z-index: 30;
 }
 
+.top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 .exit-button {
   width: 70px;
   height: 70px;
@@ -340,6 +346,34 @@ body {
 .exit-button:active {
   transform: translateY(6px);
   box-shadow: 0 0px 0 #bc23a5;
+}
+
+.music-toggle-btn {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: #00b4d8;
+  border: 6px solid white;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #0077b6;
+  transition: transform 0.1s, background-color 0.2s, box-shadow 0.2s;
+}
+.music-toggle-btn:active {
+  transform: translateY(6px);
+  box-shadow: 0 0px 0 #0077b6;
+}
+
+.music-toggle-btn.muted {
+  background: #8e9aaf;
+  box-shadow: 0 6px 0 #4a4e69;
+}
+.music-toggle-btn.muted:active {
+  transform: translateY(6px);
+  box-shadow: 0 0px 0 #4a4e69;
 }
 
 .progress-bar {
